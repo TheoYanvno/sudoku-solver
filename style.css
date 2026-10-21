@@ -143,5 +143,39 @@ select, textarea {
   border-radius: 8px;
   font-size: 0.9rem;
 }
+.stats[hidden] { display: none; }
 .stats dt { color: var(--muted); }
 .stats dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+/* ---- watch it solve ---- */
+
+.cell.guess { color: var(--guess); }
+.cell.flash { animation: flash 0.35s ease-out; }
+@keyframes flash { from { background: var(--focus); } }
+@media (prefers-reduced-motion: reduce) { .cell.flash { animation: none; } }
+
+.speed { display: grid; gap: 4px; color: var(--muted); font-size: 0.9rem; }
+.speed input { width: 100%; accent-color: var(--accent); }
+
+.log-box {
+  padding: 12px 14px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.log-box h2 { margin: 0 0 6px; font-size: 0.95rem; }
+.log {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  min-height: 9em;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.log li { padding: 2px 0; border-bottom: 1px dashed var(--line); }
+.log li:first-child { color: var(--ink); font-weight: 500; }
+.log li.guess { color: var(--guess); }
+.log li.backtrack { color: var(--error); }
+.legend { margin: 8px 0 0; font-size: 0.8rem; color: var(--muted); }
+.key.solved { color: var(--solved); }
+.key.guess { color: var(--guess); margin-left: 8px; }

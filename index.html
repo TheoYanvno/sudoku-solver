@@ -22,9 +22,21 @@
       <aside class="panel">
         <div class="buttons">
           <button id="solve" class="primary">Solve</button>
+          <button id="watch">Watch it solve</button>
+          <button id="stop" hidden>Stop</button>
           <button id="check">Check my answers</button>
           <button id="clear">Clear</button>
         </div>
+
+        <label class="speed">Animation speed
+          <input id="speed" type="range" min="1" max="10" value="6">
+        </label>
+
+        <section class="log-box" aria-label="What the solver is doing">
+          <h2>What the solver is doing</h2>
+          <ol id="log" class="log"></ol>
+          <p class="legend"><span class="key solved">●</span> forced by the rules <span class="key guess">●</span> a guess</p>
+        </section>
 
         <details class="paste">
           <summary>Paste a puzzle</summary>

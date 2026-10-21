@@ -106,6 +106,90 @@ $('solve').onclick = () => {
   ]);
 };
 
+// ---- watch it solve: replay the solver's steps one at a time ----
+
+let playing = null;
+
+function logLine(step) {
+  const li = document.createElement('li');
+  li.className = step.type;
+  li.textContent = step.reason[0].toUpperCase() + step.reason.slice(1);
+  $('log').prepend(li);
+  while ($('log').children.length > 8) $('log').lastChild.remove();
+}
+
+function applyStep(step) {
+  if (step.type === 'backtrack') {
+    // undo everything since the guess by going back to the grid as it was then
+    step.snapshot.forEach((v, i) => {
+      if (givens[i]) return;
+      cells[i].value = v || '';
+      if (!v) cells[i].classList.remove('solved', 'guess');
+    });
+    cells[step.index].classList.add('flash');
+  } else {
+    const c = cells[step.index];
+    c.value = step.value;
+    c.classList.remove('solved', 'guess', 'flash');
+    void c.offsetWidth;                              // restart the flash animation
+    c.classList.add(step.type === 'guess' ? 'guess' : 'solved', 'flash');
+  }
+  logLine(step);
+}
+
+function stopWatching(message, kind) {
+  clearTimeout(playing);
+  playing = null;
+  $('stop').hidden = true;
+  $('watch').hidden = false;
+  ['solve', 'check', 'clear', 'load'].forEach((id) => { $(id).disabled = false; });
+  cells.forEach((c, i) => { c.readOnly = givens[i]; });
+  if (message) setStatus(message, kind);
+}
+
+$('watch').onclick = () => {
+  const puzzle = values().map((v, i) => (givens[i] || !givens.some(Boolean) ? v : 0));
+  if (conflicts(puzzle).length) return setStatus(validate(puzzle), 'error');
+  const { solution, steps, stats } = solve(puzzle, { record: true });
+  if (!solution) return setStatus('This puzzle has no solution. Check the clues for a typo.', 'error');
+  if (!givens.some(Boolean)) givens = puzzle.map((v) => v > 0);
+
+  load(puzzle, { asGivens: false });
+  $('log').innerHTML = '';
+  $('watch').hidden = true;
+  $('stop').hidden = false;
+  ['solve', 'check', 'clear', 'load'].forEach((id) => { $(id).disabled = true; });
+  cells.forEach((c) => { c.readOnly = true; });
+  setStatus(`Solving… ${steps.length} steps`);
+
+  let n = 0;
+  const next = () => {
+    if (n >= steps.length) {
+      showStats([
+        ['Steps', steps.length],
+        ['Only-one-fits cells', stats.singles],
+        ['Only-one-spot digits', stats.hidden],
+        ['Guesses', stats.guesses],
+        ['Backtracks', stats.backtracks],
+      ]);
+      return stopWatching(stats.guesses ? `Solved with ${stats.guesses} guesses and ${stats.backtracks} backtracks.` : 'Solved by logic alone, no guessing needed.', 'good');
+    }
+    applyStep(steps[n++]);
+    // speed 1 = 600 ms per step, speed 10 = 8 ms
+    const speed = Number($('speed').value);
+    playing = setTimeout(next, Math.round(600 * Math.pow(0.62, speed - 1)));
+  };
+  next();
+};
+
+$('stop').onclick = () => {
+  // finish instantly so the grid isn't left half-filled
+  const puzzle = values().map((v, i) => (givens[i] ? v : 0));
+  const { solution } = solve(puzzle);
+  solution?.forEach((v, i) => { if (!givens[i]) { cells[i].value = v; cells[i].classList.add('solved'); } });
+  stopWatching('Stopped, and filled in the rest.', 'good');
+};
+
 $('check').onclick = () => {
   const puzzle = values().map((v, i) => (givens[i] ? v : 0));
   const { solution } = solve(puzzle);
