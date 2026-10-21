@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sudoku Solver</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>Sudoku Solver</h1>
+      <p class="lede">Type a puzzle or paste one in, then let the solver fill it in.</p>
+    </header>
+
+    <div class="layout">
+      <section class="board-area">
+        <div id="grid" class="grid" role="grid" aria-label="Sudoku grid"></div>
+        <p id="status" class="status" role="status"></p>
+      </section>
+
+      <aside class="panel">
+        <div class="buttons">
+          <button id="solve" class="primary">Solve</button>
+          <button id="check">Check my answers</button>
+          <button id="clear">Clear</button>
+        </div>
+
+        <details class="paste">
+          <summary>Paste a puzzle</summary>
+          <label for="pasteText">81 characters: 1-9 for clues, 0 or . for blanks</label>
+          <textarea id="pasteText" rows="3" spellcheck="false" placeholder="53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79"></textarea>
+          <button id="load">Load</button>
+        </details>
+
+        <dl id="stats" class="stats" hidden></dl>
+      </aside>
+    </div>
+  </main>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
