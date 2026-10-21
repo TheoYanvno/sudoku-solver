@@ -1,4 +1,5 @@
-import { parse, validate, conflicts, solve, isSolved, PEERS } from './sudoku.js';
+import { generate, LEVELS } from './generator.js';
+import { parse, format, validate, conflicts, solve, isSolved, PEERS } from './sudoku.js';
 
 const $ = (id) => document.getElementById(id);
 const SAMPLE = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79';
@@ -142,7 +143,7 @@ function stopWatching(message, kind) {
   playing = null;
   $('stop').hidden = true;
   $('watch').hidden = false;
-  ['solve', 'check', 'clear', 'load'].forEach((id) => { $(id).disabled = false; });
+  ['solve', 'check', 'clear', 'load', 'generate'].forEach((id) => { $(id).disabled = false; });
   cells.forEach((c, i) => { c.readOnly = givens[i]; });
   if (message) setStatus(message, kind);
 }
@@ -158,7 +159,7 @@ $('watch').onclick = () => {
   $('log').innerHTML = '';
   $('watch').hidden = true;
   $('stop').hidden = false;
-  ['solve', 'check', 'clear', 'load'].forEach((id) => { $(id).disabled = true; });
+  ['solve', 'check', 'clear', 'load', 'generate'].forEach((id) => { $(id).disabled = true; });
   cells.forEach((c) => { c.readOnly = true; });
   setStatus(`Solving… ${steps.length} steps`);
 
@@ -223,6 +224,17 @@ $('load').onclick = () => {
   } catch (err) {
     setStatus(err.message, 'error');
   }
+};
+
+$('generate').onclick = () => {
+  const level = $('level').value;
+  const { puzzle, clues } = generate(level);
+  load(puzzle);
+  $('stats').hidden = true;
+  $('log').innerHTML = '';
+  history.replaceState(null, '', '#' + format(puzzle));      // the URL now shares this puzzle
+  setStatus(`New ${LEVELS[level].label.toLowerCase()} puzzle with ${clues} clues and exactly one solution.`);
+  cells.find((c) => !c.value)?.focus();
 };
 
 // A puzzle can be shared in the URL: index.html#53..7....6..195...

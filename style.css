@@ -179,3 +179,6 @@ select, textarea {
 .legend { margin: 8px 0 0; font-size: 0.8rem; color: var(--muted); }
 .key.solved { color: var(--solved); }
 .key.guess { color: var(--guess); margin-left: 8px; }
+
+.new-puzzle { display: flex; align-items: end; gap: 8px; flex-wrap: wrap; }
+.new-puzzle label { display: grid; gap: 4px; color: var(--muted); font-size: 0.9rem; }
